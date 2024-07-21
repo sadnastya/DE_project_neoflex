@@ -77,7 +77,7 @@ begin
     from 
         ds.md_account_d acc
     left join 
-        ds.md_ledger_account_s led on acc.account_rk = led.ledger_account
+        ds.md_ledger_account_s led on left(acc.account_number, 5)::numeric = led.ledger_account
     left join 
         dm.dm_account_balance_f prev_bal on acc.account_rk = prev_bal.account_rk and prev_bal.on_date = v_from_date - interval '1 day'
     left join 
