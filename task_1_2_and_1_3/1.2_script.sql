@@ -15,7 +15,20 @@ create table if not exists dm.dm_account_balance_f(
 	balance_out float,
 	balance_out_rub float
 	);
-
+truncate dm.dm_account_balance_f;
+insert into dm.dm_account_balance_f (
+    on_date,
+    account_rk,
+    balance_out,
+    balance_out_rub
+)select
+    bf.on_date,
+    bf.account_rk,
+    bf.balance_out,
+    bf.balance_out * COALESCE(er.reduced_cource, 1) AS balance_out_rub
+from ds.ft_balance_f bf left join ds.md_exchange_rate_d er
+on bf.currency_rk = er.currency_rk and bf.on_date between er.data_actual_date and er.data_actual_end_date
+where bf.on_date = '2017-12-31'::date;
 CREATE OR REPLACE PROCEDURE ds.create_log(info text)
 as $$
 begin
